@@ -3,19 +3,164 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show <table></table>
-    </title>
+    <title>Show Data</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #2575fc;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .btn-delete {
+            background: red;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background: darkred;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 2px;
+            text-decoration: none;
+            background: #2575fc;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background: #1a5ed9;
+        }
+
+        .active {
+            background: rgb(255, 255, 255) !important;
+        }
+    </style>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis corporis, iusto in molestiae consequatur
-    consequuntur officia accusantium optio ad earum quibusdam cumque iure voluptatibus quaerat voluptatem accusamus
-    ratione voluptates animi illum sed rerum? Libero nam, molestias eius sit officiis optio incidunt explicabo adipisci
-    mollitia minus inventore maiores necessitatibus illum perspiciatis quia esse ipsum deleniti amet ratione. Fugit
-    libero reprehenderit mollitia iusto adipisci, eos a? Beatae eligendi nisi soluta neque, corrupti sit sequi odit
-    necessitatibus modi minima dolore illum sed tempore ea laboriosam ducimus vitae facere! Ea exercitationem, vero amet
-    rem aliquam consectetur fuga, quibusdam obcaecati ducimus iusto maiores saepe vel!
+
+    <div class="container">
+        <h2>All Data</h2>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+
+            {% for i in page_obj %}
+            <tr>
+                <td>{{ i.id }}</td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.subject }}</td>
+                <td>{{ i.email }}</td>
+                <td>
+                    <button class="btn-delete" data-id="{{ i.id }}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Prev</a>
+            {% endif %}
+
+            <span class="active">Page {{ page_obj.number }}</span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", function () {
+                let id = this.getAttribute("data-id");
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    icon: "warning",
+                    showCancelButton: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/delete/" + id + "/";
+                    }
+                });
+            });
+        });
+    </script>
+
+    {% if messages %}
+    {% for message in messages %}
+    <script>
+        Swal.fire({
+            icon: "{% if 'success' in message.tags %}success{% else %}error{% endif %}",
+            title: "{{ message|escapejs }}",
+            timer: 2000,
+            showConfirmButton: false
+        });
+    </script>
+    {% endfor %}
+    {% endif %}
+
 </body>
 
 </html>

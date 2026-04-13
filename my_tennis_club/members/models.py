@@ -8,7 +8,6 @@ class Member(models.Model):
     lastname = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, unique=True)
 
-
 class MyTable(models.Model):
     name = models.CharField(max_length=255)
     subject = models.CharField(max_length=255)
